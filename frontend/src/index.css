@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* -----------------------------
+   1. Base reset (safe version)
+------------------------------*/
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: #0a0a0f;
+    color: white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* -----------------------------
+   2. Custom utilities
+------------------------------*/
+
+@layer utilities {
+  .font-heading {
+    font-family: "Syne", sans-serif;
+  }
+  .font-body{
+    font-family: "DM Mono", monospace;
+    color: #6b6b80;
+  }
+  .inner-box{
+    background-color: #111118;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+@theme {
+  --color-grey: #6b6b80; 
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,60 @@
+/* placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #4a4a5a;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* headings */
+.tiptap h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+.tiptap h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.4rem; }
+
+/* lists */
+.tiptap ul { list-style: disc; padding-left: 1.2rem; margin: 0.5rem 0; }
+.tiptap ol { list-style: decimal; padding-left: 1.2rem; margin: 0.5rem 0; }
+.tiptap li { margin: 0.2rem 0; }
+
+/* code block */
+.tiptap pre {
+  background: #1a1a24;
+  border: 1px solid #ffffff18;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+}
+
+/* inline code */
+.tiptap code {
+  background: #1a1a24;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* blockquote */
+.tiptap blockquote {
+  border-left: 3px solid #7c6dfa;
+  padding-left: 12px;
+  color: #6b6b80;
+  margin: 0.5rem 0;
+  font-style: italic;
+}
+
+/* makes the editor div fill full height */
+.tiptap-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tiptap-wrapper .ProseMirror {
+  flex: 1;
+  min-height: 200px;
+}
