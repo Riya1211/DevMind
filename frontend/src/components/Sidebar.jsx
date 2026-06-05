@@ -66,49 +66,6 @@ const getInitials = (name) => {
           <div className="font-body text-[0.6rem]">DEVELOPER JOURNAL</div>
         </div>
       </div>
-      {/* <div className='flex-1 p-4 flex flex-col font-heading text-grey'>
-            <div className='flex flex-col'>
-                <h5 className='text-[0.6rem] py-2 tracking-widest'>MAIN</h5>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span>◈</span>
-                    <div className='text-[0.8rem] font-semibold'>Dashboard</div>
-                </div>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span>✦</span>
-                    <div className='text-[0.8rem] font-semibold'>Write Entry</div>
-                </div>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[1rem]'>≡</span>
-                    <div className='text-[0.8rem] font-semibold'>All Entries</div>
-                </div>
-            </div>
-            <div className='flex flex-col'>
-                <h5 className='text-[0.6rem] py-2 mt-2 tracking-widest'>AI <span className='ml-1'>TOOLS</span></h5>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[0.8rem]'>◎</span>
-                    <div className='text-[0.8rem] font-semibold'>AI Chat</div>
-                </div>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[1rem]'>⬡</span>
-                    <div className='text-[0.8rem] font-semibold'>Quiz Me</div>
-                </div>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[0.8rem]'>↗</span>
-                    <div className='text-[0.8rem] font-semibold'>Semantic Search</div>
-                </div>
-            </div>
-            <div className='flex flex-col'>
-                <h5 className='text-[0.6rem] py-2 mt-2 tracking-widest'>ACCOUNT</h5>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[1rem]'>⊙</span>
-                    <div className='text-[0.8rem] font-semibold'>Log Out</div>
-                </div>
-                <div className='flex px-2 py-1 items-center gap-3 rounded-[4px] cursor-pointer hover:bg-[#1a1a24] hover:text-white transition-all duration-200'>
-                    <span className='text-[1rem]'>⚙</span>
-                    <div className='text-[0.8rem] font-semibold'>Settings</div>
-                </div>
-            </div>
-        </div> */}
       <div className="flex-1 p-4 flex flex-col font-heading text-grey border-b-1 border-[#ffffff0f]">
         {navSections.map((section) => (
           <div key={section.title} className="flex flex-col">

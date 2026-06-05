@@ -27,17 +27,7 @@ function Dashboard() {
   const streak = data?.stats.currentStreak ?? 0;
   return (
     <div className="flex flex-col h-screen w-full">
-      {/* Top bar older way below */}
-      {/* <div className='h-20 flex p-4 border-b-1 border-[#ffffff0f] justify-between'>
-            <div className='flex flex-col justify-center leading-tight'>
-                <div className='font-heading text-[1.4rem] font-extrabold tracking-tighter'>Good morning ✦</div>
-                <div className='font-body text-[0.7rem]'>Monday, 18 May 2026 · 7 day streak</div>
-            </div>
-            <div className='flex items-center gap-2'>
-                <div className='flex items-center px-4 h-7 bg-transparent rounded-lg border border-[#ffffff18] font-heading font-bold text-[#6b6b80] text-[12px] tracking-tight cursor-pointer hover:bg-[#ffffff18] hover:text-white hover:border-[#ffffff18] transition-[background,color,border-color] duration-200'>⌕ Search</div>
-                <div className='flex items-center px-4 h-7 bg-[#7c6dfa] text-white font-bold rounded-lg border border-[#ffffff18] font-heading text-[#6b6b80] text-[0.7rem] tracking-tighter hover:bg-[#a78bfa] cursor-pointer hover:-translate-y-px transition-[background,transform] duration-200'>✦ New Entry</div>
-            </div>
-        </div> */}
+
       <TopBar
         title={greeting}
         subtitle={`${currentDate} · ${streak} day streak 🔥`}
