@@ -13,7 +13,7 @@ export const entryApi = createApi({
     },
   }),
 
-  tagTypes: ["Entries"],
+  tagTypes: ["Entries","Stats"],
 
   endpoints: (builder) => ({
     getEntries: builder.query({
@@ -30,6 +30,7 @@ export const entryApi = createApi({
         url: "/entries/stats",
         method: "GET",
       }),
+      providesTags: ["Stats"],
     }),
 
     createEntry: builder.mutation({
@@ -38,7 +39,7 @@ export const entryApi = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Entries"],
+      invalidatesTags: ["Entries", "Stats"],
     }),
 
     updateEntry: builder.mutation({
@@ -50,6 +51,7 @@ export const entryApi = createApi({
       invalidatesTags: (result, error, { id }) => [
         "Entries",
         { type: "Entries", id },
+        "Stats",
       ],
     }),
   }),
