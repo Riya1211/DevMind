@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import "./editor.css";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 function ToolbarBtn({ onClick, active, children }) {
   return (
@@ -19,12 +20,39 @@ function ToolbarBtn({ onClick, active, children }) {
     </button>
   );
 }
+function Tooltip({ text, children }) {
+  return (
+    <div className="relative group">
+      {children}
+      <div
+        className="
+        absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+        px-2 py-1 bg-[#1a1a24] border border-[#ffffff18]
+        text-[10px] font-body !text-[#6b6b80] rounded-md
+        whitespace-nowrap pointer-events-none
+        opacity-0 group-hover:opacity-100
+        transition-opacity duration-150
+      "
+      >
+        {text}
+        {/* little arrow pointing down */}
+        <div
+          className="absolute top-full left-1/2 -translate-x-1/2
+          border-4 border-transparent border-t-[#ffffff18]"
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function Editor({
   title,
   onTitleChange,
   content,
   onContentChange,
+  onSummarise,
+  isSummarising,
+  summary,
 }) {
   const [wordCount, setWordCount] = useState(0);
   const [activeMarks, setActiveMarks] = useState({
@@ -92,6 +120,7 @@ export default function Editor({
   }, [editor, content]);
   if (!editor) return null;
 
+  const { id } = useParams();
   return (
     <div className="flex flex-col flex-1 bg-[#111118] rounded-lg border border-[#ffffff0f] overflow-hidden min-h-0">
       {/* Toolbar */}
@@ -188,9 +217,20 @@ export default function Editor({
         className="bg-transparent border-none outline-none text-2xl font-extrabold font-heading tracking-tight placeholder:text-[#4a4a5a] px-6 pt-5 pb-3 text-white shrink-0 w-full"
       />
 
-      {/* Typing area — flex-1 so it fills remaining height */}
+      {/* Typing area is flex-1 so it fills remaining height */}
       <EditorContent editor={editor} className="tiptap-wrapper" />
 
+      {/* It only shows when there's a summary */}
+      {summary && (
+        <div className="mx-6 mb-3 p-3 bg-[#7c6dfa22] border border-[#7c6dfa33] rounded-lg">
+          <div className="text-[9px] text-[#a78bfa] font-body !text-white tracking-wider mb-1">
+            AI SUMMARY
+          </div>
+          <p className="text-[11px] text-[#f0f0f5] font-body !text-white leading-relaxed">
+            {summary}
+          </p>
+        </div>
+      )}
       {/* Footer — word count + AI buttons */}
       <div className="flex items-center justify-between px-6 py-3 border-t border-[#ffffff0f] shrink-0">
         <span className="text-[10px] text-[#6b6b80] font-mono">
@@ -198,12 +238,31 @@ export default function Editor({
         </span>
 
         <div className="flex gap-2">
-          <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer">
-            ✦ AI Summarise
-          </button>
-          <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer">
-            ⬡ Tag with AI
-          </button>
+          <Tooltip
+            text={
+              !id ? "Save entry first to use AI features" : "Summarise with AI"
+            }
+          >
+            <button
+              onClick={onSummarise}
+              disabled={isSummarising || !id}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSummarising ? "Summarising..." : "✦ AI Summarise"}
+            </button>
+          </Tooltip>
+
+          <Tooltip
+            text={
+              !id ? "Save entry first to use AI features" : "Summarise with AI"
+            }
+          >
+            <button 
+            disabled={!id}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+              ⬡ Tag with AI
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>

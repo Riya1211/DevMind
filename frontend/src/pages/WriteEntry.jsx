@@ -7,16 +7,20 @@ import {
   useGetSingleEntryQuery,
   useUpdateEntryMutation,
 } from "../store/api/entryAPI";
+import { useSummariseEntryMutation } from "../store/api/aiAPI";
 import { useEffect } from "react";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 function WriteEntry() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedMood, setSelectedMood] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedMulti, setSelectedMulti] = useState([]);
+  const [summary, setSummary] = useState("");
+  const [summarise, { isLoading: isSummarising }] = useSummariseEntryMutation();
 
   const types = ["📝 Notes", "💥 Struggle", "✨ Breakthrough", "📌 Reference"];
   const tags = [
@@ -48,7 +52,6 @@ function WriteEntry() {
   };
 
   // Setting Data
-  const { id } = useParams();
   const [createEntry] = useCreateEntryMutation();
   const [updateEntry] = useUpdateEntryMutation();
   const isEditMode = Boolean(id);
@@ -72,7 +75,7 @@ function WriteEntry() {
         navigate("/");
       } else {
         await createEntry(payload).unwrap();
-        toast.success("Entry saved!"); 
+        toast.success("Entry saved!");
         navigate("/");
       }
     } catch (error) {
@@ -89,6 +92,17 @@ function WriteEntry() {
     setSelectedMood(data.entry.mood);
     setSelectedType(data.entry.type);
   }, [data]);
+
+  //Handle AI
+  const handleSummarise = async () => {
+    if (!id) return; // only works when editing an existing entry
+    try {
+      const result = await summarise(id).unwrap();
+      setSummary(result.summary);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <div className="flex flex-col h-screen">
       <TopBar
@@ -119,6 +133,9 @@ function WriteEntry() {
             onTitleChange={setTitle}
             content={content} //set content
             onContentChange={setContent}
+            onSummarise={handleSummarise}
+            isSummarising={isSummarising}
+            summary={summary}
             className="flex-1"
           />
         </div>

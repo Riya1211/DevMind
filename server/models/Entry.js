@@ -27,7 +27,7 @@ const entrySchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true, // every entry must belong to a user
+      required: true, 
     },
   },
   {
