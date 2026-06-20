@@ -5,9 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   useCreateEntryMutation,
   useGetSingleEntryQuery,
+  useGetTagsQuery,
   useUpdateEntryMutation,
 } from "../store/api/entryAPI";
-import { useSummariseEntryMutation } from "../store/api/aiAPI";
+import {
+  useSummariseEntryMutation,
+  useTagEntryMutation,
+} from "../store/api/aiAPI";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -21,9 +25,11 @@ function WriteEntry() {
   const [selectedMulti, setSelectedMulti] = useState([]);
   const [summary, setSummary] = useState("");
   const [summarise, { isLoading: isSummarising }] = useSummariseEntryMutation();
+  const [tagWithAI, { isLoading: isTagging }] = useTagEntryMutation();
+  const { data: tagsData } = useGetTagsQuery();
 
   const types = ["📝 Notes", "💥 Struggle", "✨ Breakthrough", "📌 Reference"];
-  const tags = [
+  const DEFAULT_TAGS = [
     "React",
     "Node.js",
     "MongoDB",
@@ -49,6 +55,25 @@ function WriteEntry() {
     } else {
       setSelectedMulti([...selectedMulti, item]);
     }
+  };
+
+  const [tags, setTags] = useState(DEFAULT_TAGS);
+
+  const [showAddTag, setShowAddTag] = useState(false);
+  const [newTag, setNewTag] = useState("");
+
+  const handleAddTag = () => {
+    const trimmed = newTag.trim();
+    if (!trimmed || tags.includes(trimmed)) return;
+
+    const updated = [...tags, trimmed];
+    setTags(updated);
+
+    // auto select the new tag
+    setSelectedMulti((prev) => [...prev, trimmed]);
+
+    setNewTag("");
+    setShowAddTag(false);
   };
 
   // Setting Data
@@ -82,6 +107,7 @@ function WriteEntry() {
       console.error(error);
     }
   };
+
   // populate data
   useEffect(() => {
     if (!data?.entry) return;
@@ -93,7 +119,14 @@ function WriteEntry() {
     setSelectedType(data.entry.type);
   }, [data]);
 
-  //Handle AI
+  // merge DEFAULT_TAGS with tags from all entries in DB
+  useEffect(() => {
+    if (!tagsData?.tags) return;
+    const merged = [...new Set([...DEFAULT_TAGS, ...tagsData.tags])];
+    setTags(merged);
+  }, [tagsData]);
+
+  //AI Summarise
   const handleSummarise = async () => {
     if (!id) return; // only works when editing an existing entry
     try {
@@ -101,6 +134,34 @@ function WriteEntry() {
       setSummary(result.summary);
     } catch (err) {
       console.error(err);
+    }
+  };
+  
+  //AI with Tags
+  const handleTagWithAI = async () => {
+    if (!title && !content) {
+      toast.error("Write something first!");
+      return;
+    }
+    try {
+      const payload = id ? { entryId: id } : { title, content };
+      const result = await tagWithAI(payload).unwrap();
+
+      const newTags = result.tags.filter((t) => !tags.includes(t));
+
+      // add to tags list
+      if (newTags.length > 0) {
+        setTags((prev) => {
+          const updated = [...prev, ...newTags];
+          return updated;
+        });
+      }
+
+      const merged = [...new Set([...selectedMulti, ...result.tags])];
+      setSelectedMulti(merged);
+      toast.success("Tags added!");
+    } catch (err) {
+      toast.error("Could not generate tags");
     }
   };
   return (
@@ -136,6 +197,8 @@ function WriteEntry() {
             onSummarise={handleSummarise}
             isSummarising={isSummarising}
             summary={summary}
+            onTagWithAI={handleTagWithAI}
+            isTagging={isTagging}
             className="flex-1"
           />
         </div>
@@ -149,22 +212,95 @@ function WriteEntry() {
               {tags.map((item) => (
                 <div
                   key={item}
-                  onClick={() => handleMultiSelect(item)}
-                  className={`p-1 text-[0.65rem] border border-[#ffffff18] rounded-[5px] cursor-pointer hover:bg-[#7c6dfa] hover:text-[#fff] hover:border-[#7c6dfa] transition-all duration-150
-                  
-                  ${
-                    selectedMulti.includes(item)
-                      ? "bg-[#7c6dfa] text-white border-[#7c6dfa]"
-                      : "border-[#ffffff18] hover:bg-[#7c6dfa] hover:text-white hover:border-[#7c6dfa]"
-                  }
-                `}
+                  className={`flex items-center gap-1 p-1 text-[0.65rem] border rounded-[5px] transition-all duration-150
+                      ${
+                        selectedMulti.includes(item)
+                          ? "bg-[#7c6dfa] text-white border-[#7c6dfa]"
+                          : "border-[#ffffff18] hover:bg-[#7c6dfa] hover:text-white hover:border-[#7c6dfa]"
+                      }`}
                 >
-                  {item}
+                  {/* clicking label toggles selection */}
+                  <span
+                    onClick={() => handleMultiSelect(item)}
+                    className="cursor-pointer"
+                  >
+                    {item}
+                  </span>
+
+                  {/* ✕ only on custom tags */}
+                  {!DEFAULT_TAGS.includes(item) && (
+                    <span
+                      onClick={async () => {
+                        // remove from tags list and selected list then update local storage as well
+                        setTags((prev) => prev.filter((t) => t !== item));
+                        const updatedSelected = selectedMulti.filter(
+                          (t) => t !== item,
+                        );
+                        setSelectedMulti(updatedSelected);
+
+                        const custom = tags.filter(
+                          (t) => !DEFAULT_TAGS.includes(t) && t !== item,
+                        );
+                        localStorage.setItem(
+                          "customTags",
+                          JSON.stringify(custom),
+                        );
+                        // If in edit mode, save to backend immediately
+                        if (id) {
+                          try {
+                            await updateEntry({
+                              id,
+                              tags: updatedSelected,
+                            }).unwrap();
+                            toast.success("Tag removed!");
+                          } catch (err) {
+                            toast.error("Could not remove tag");
+                          }
+                        }
+                      }}
+                      className="cursor-pointer opacity-60 hover:opacity-100 ml-0.5 leading-none"
+                    >
+                      ✕
+                    </span>
+                  )}
                 </div>
               ))}
-              <div className="p-1 text-[0.65rem] border border-[#ffffff18] rounded-[5px] cursor-pointer hover:bg-[#7c6dfa] hover:text-[#fff] hover:border-[#7c6dfa] transition-all duration-150">
-                + Add
-              </div>
+
+              {/* Add tag input — toggles on click */}
+              {showAddTag ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    autoFocus
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleAddTag();
+                      if (e.key === "Escape") setShowAddTag(false);
+                    }}
+                    placeholder="tag name..."
+                    className="w-24 px-2 py-1 text-[0.65rem] bg-[#1a1a24] border border-[#7c6dfa] rounded-[5px] text-white outline-none font-mono"
+                  />
+                  <button
+                    onClick={handleAddTag}
+                    className="p-1 text-[0.65rem] bg-[#7c6dfa] text-white rounded-[5px]"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    onClick={() => setShowAddTag(false)}
+                    className="p-1 text-[0.65rem] text-[#6b6b80] hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => setShowAddTag(true)}
+                  className="p-1 text-[0.65rem] border border-dashed border-[#ffffff18] rounded-[5px] cursor-pointer hover:border-[#7c6dfa] hover:text-[#7c6dfa] transition-all duration-150"
+                >
+                  + Add
+                </div>
+              )}
             </div>
           </div>
 

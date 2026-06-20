@@ -13,7 +13,7 @@ export const entryApi = createApi({
     },
   }),
 
-  tagTypes: ["Entries","Stats"],
+  tagTypes: ["Entries", "Stats"],
 
   endpoints: (builder) => ({
     getEntries: builder.query({
@@ -54,6 +54,10 @@ export const entryApi = createApi({
         "Stats",
       ],
     }),
+    //get tags
+    getTags: builder.query({
+      query: () => "/entries/tags",
+    }),
   }),
 });
 
@@ -63,4 +67,5 @@ export const {
   useGetStatsQuery,
   useCreateEntryMutation,
   useUpdateEntryMutation,
+  useGetTagsQuery
 } = entryApi;

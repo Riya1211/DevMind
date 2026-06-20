@@ -6,6 +6,7 @@ import {
   deleteEntry,
   updateEntry,
   getStats,
+  getAllTags,
 } from "../controllers/entry.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
@@ -15,6 +16,7 @@ const router = express.Router();
 router.use(isAuthenticated);
 
 router.get("/stats", getStats);
+router.get("/tags", getAllTags);
 router.post("/", createEntry);
 router.get("/", getEntries);
 router.get("/:id", getEntry);

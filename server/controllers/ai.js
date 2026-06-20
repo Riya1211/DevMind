@@ -34,3 +34,61 @@ export const summariseEntry = TryCatch(async (req, res, next) => {
     summary,
   });
 });
+
+//Tags With AI
+export const tagEntry = TryCatch(async (req, res, next) => {
+  const { entryId, title, content } = req.body;
+  let entryTitle, entryContent;
+    if (entryId) {
+    // edit mode
+    const entry = await Entry.findById(entryId);
+    if (!entry) return next(new ErrorHandler("Entry not found", 404));
+    entryTitle = entry.title;
+    entryContent = entry.content;
+  } else {
+    // new entry 
+    entryTitle = title;
+    entryContent = content;
+  }
+
+  // strip HTML tags
+  const plainText = entryContent.replace(/<[^>]*>/g, "");
+
+  if (!plainText.trim()) {
+    return next(new ErrorHandler("Entry has no content to tag", 400));
+  }
+
+  const prompt = `
+    You are a tagging assistant for a developer journal app.
+    
+    A developer wrote this journal entry:
+    Title: ${entryTitle}
+    Content: ${plainText}
+    
+    Suggest 3-5 relevant technical tags for this entry.
+    Choose from common developer topics like: React, Node.js, MongoDB, 
+    Express, JavaScript, TypeScript, CSS, Auth, API, Git, Docker, etc.
+    
+    Respond ONLY with a JSON object in this exact format, no other text:
+    { "tags": ["tag1", "tag2", "tag3"] }
+  `;
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.text().trim();
+
+  const cleaned = text
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
+
+  let tags;
+  try {
+    const parsed = JSON.parse(cleaned);
+    tags = parsed.tags;
+  } catch (e) {
+    const match = cleaned.match(/\[.*?\]/s);
+    tags = match ? JSON.parse(match[0]) : [];
+  }
+
+  return res.status(200).json({ success: true, tags });
+});

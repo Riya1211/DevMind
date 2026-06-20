@@ -100,6 +100,19 @@ export const updateEntry = TryCatch(async (req, res, next) => {
   });
 });
 
+// get All Tags
+export const getAllTags = TryCatch(async (req, res, next) => {
+  const entries = await Entry.find({ user: req.user._id });
+  
+  // get all unique tags across all entries
+  const allTags = [...new Set(entries.flatMap(e => e.tags))];
+
+  return res.status(200).json({
+    success: true,
+    tags: allTags,
+  });
+});
+
 //Get Stats
 export const getStats = TryCatch(async (req, res, next) => {
   const userId = req.user._id;

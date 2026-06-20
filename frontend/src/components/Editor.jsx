@@ -53,6 +53,8 @@ export default function Editor({
   onSummarise,
   isSummarising,
   summary,
+  onTagWithAI,
+  isTagging,
 }) {
   const [wordCount, setWordCount] = useState(0);
   const [activeMarks, setActiveMarks] = useState({
@@ -253,14 +255,14 @@ export default function Editor({
           </Tooltip>
 
           <Tooltip
-            text={
-              !id ? "Save entry first to use AI features" : "Summarise with AI"
-            }
+            text={!title && !content ? "Write something first" : "Auto-tag with AI"}
           >
-            <button 
-            disabled={!id}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-              ⬡ Tag with AI
+            <button
+              onClick={onTagWithAI}
+              disabled={isTagging || (!title && !content)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#ffffff18] text-[#6b6b80] text-[11px] font-heading font-bold hover:bg-[#1a1a24] hover:text-white transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTagging ? "Tagging..." : "⬡ Tag with AI"}
             </button>
           </Tooltip>
         </div>
