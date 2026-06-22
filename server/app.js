@@ -6,6 +6,7 @@ import { errorMiddleware } from "./middlewares/error.js";
 import authRoutes from './routes/auth.js'
 import entryRoutes from "./routes/entry.js";
 import aiRoutes from "./routes/ai.js"
+import quizRoutes from "./routes/quiz.js"
 
 // dotenv.config();    ← runs too late, gemini already loaded that is why we will loaded this way before anything Hoisted Problem
 
@@ -26,6 +27,7 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/entries", entryRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/quiz", quizRoutes);
 
 // Error middleware — always last
 app.use(errorMiddleware);

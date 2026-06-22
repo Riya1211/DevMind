@@ -65,10 +65,10 @@ function StatCard() {
       delay: 150,
     },
     {
-      title: "AI SUMMARIES",
-      value: data?.stats.aiSummaries ?? "—",
+      title: "AI QUIZZES",
+      value: data?.stats.aiQuizes ?? "—",
       span: "",
-      data: "summaries generated",
+      data: "quizzes taken",
       color: "#f87171",
       delay: 200,
     },

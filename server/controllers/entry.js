@@ -1,6 +1,7 @@
 import Entry from "../models/Entry.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { TryCatch } from "../middlewares/error.js";
+import Quiz from "../models/Quiz.js";
 
 // CREATE entry
 export const createEntry = TryCatch(async (req, res, next) => {
@@ -129,6 +130,8 @@ export const getStats = TryCatch(async (req, res, next) => {
   // calculate streak and best streak
   const { current, best } = calculateStreak(entries);
 
+  // get real quiz count from Quiz collection
+  const totalQuizzes = await Quiz.countDocuments({ user: userId });
   return res.status(200).json({
     success: true,
     stats: {
@@ -136,7 +139,7 @@ export const getStats = TryCatch(async (req, res, next) => {
       currentStreak: current,
       bestStreak: best,
       skills, // feeds skills logged card
-      aiSummaries: 0, // will update in Phase 2
+      aiQuizes: totalQuizzes,
     },
   });
 });
