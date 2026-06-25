@@ -8,6 +8,7 @@ import AllEntries from "./pages/AllEntries.jsx";
 import AIChatPage from "./pages/AIChatPage.jsx";
 import WriteEntry from "./pages/WriteEntry.jsx";
 import Register from "./pages/Register.jsx";
+import QuizMePage from "./pages/QuizMePage.jsx";
 
 
 // Protected wrapper — if no token, redirect to login
@@ -29,6 +30,7 @@ function AppLayout() {
           <Route path="/chat" element={<AIChatPage />} />
           <Route path="/write" element={<WriteEntry />} />
           <Route path="/write/:id" element={<WriteEntry />} />
+          <Route path="/quiz" element={<QuizMePage />} />
         </Routes>
       </div>
     </div>

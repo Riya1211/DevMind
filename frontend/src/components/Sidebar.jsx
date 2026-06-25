@@ -41,7 +41,7 @@ const getInitials = (name) => {
       title: "AI TOOLS",
       items: [
         { icon: "◎", label: "AI Chat", path: "/chat" },
-        { icon: "⬡", label: "Quiz Me" },
+        { icon: "⬡", label: "Quiz Me", path:"/quiz" },
         { icon: "↗", label: "Semantic Search" },
       ],
     },
