@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetEntriesQuery } from "../store/api/entryAPI";
 
@@ -49,8 +49,10 @@ const stripHtml = (html) => {
   return doc.body.textContent || "";
 };
 
-function EntryList({ limit = null, showSearch = false, className = "" }) {
+function EntryList({ limit = null, showSearch = false, className = "", type = null }) {
   const { data, isLoading, error } = useGetEntriesQuery();
+  const [search, setSearch] = useState("");
+  const [debounceSearch, setDebounceSearch] = useState("");
 
   const currentMonth = new Date().toLocaleString("en-US", {
     month: "long",
@@ -64,7 +66,21 @@ function EntryList({ limit = null, showSearch = false, className = "" }) {
       ? data.entries.slice(0, limit)
       : data.entries
     : [];
-
+    useEffect(() => {
+      const interval = setTimeout(() => {setDebounceSearch(search)}, 300)
+    
+      return () => {
+        clearTimeout(interval);
+      }
+    }, [search]);
+    
+  const filteredEntries = entries
+  .filter((entry) =>
+    entry.title.toLowerCase().includes(debounceSearch.toLowerCase()),
+  )
+  .filter((entry) =>
+    !type || type === "All" || entry.type === type 
+  );
   const navigate = useNavigate();
   return (
     <div
@@ -76,9 +92,22 @@ function EntryList({ limit = null, showSearch = false, className = "" }) {
             <div className="flex items-center font-heading text-[0.8rem] font-bold tracking-tighter">
               {currentMonth}
             </div>
-
-            <div className="flex items-center px-4 h-7 bg-[#1a1a24] rounded-lg border border-[#ffffff18] font-body text-[#6b6b80] text-[11px] tracking-tight">
-              ⌕ search entries...
+            <div className="relative">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="search entries..."
+                className="flex items-center px-4 h-7 bg-[#1a1a24] rounded-lg border border-[#ffffff18] font-body text-[11px] tracking-tight outline-none"
+              />
+              {/* only show X when there is text */}
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6b6b80] hover:text-white text-[10px] cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </>
         ) : (
@@ -98,7 +127,18 @@ function EntryList({ limit = null, showSearch = false, className = "" }) {
       </div>
       {/* entries scroll inside that is why adding one more div */}
       <div className="flex-1 overflow-y-auto">
-        {entries.map((entry) => (
+        {/* No entries found */}
+        {filteredEntries.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12 gap-2">
+            <p className="font-heading font-bold text-[0.85rem]">
+              No entries found
+            </p>
+            <p className="font-body text-[0.7rem]">
+              No entries match "{search}"
+            </p>
+          </div>
+        )}
+        {filteredEntries.map((entry) => (
           <div
             onClick={() => navigate(`/write/${entry._id}`)}
             key={entry.title}

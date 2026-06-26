@@ -54,6 +54,7 @@ function Dashboard() {
           <EntryList
             limit={4}
             showSearch={false}
+            type={null}
             className="flex-1 rounded-b-none"
           />
           <div className="w-[340px] flex flex-col gap-3 min-h-0">
